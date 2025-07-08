@@ -1,5 +1,6 @@
 #include <nds/asminc.h>
 .syntax unified
+.arm
 #if 1
 BEGIN_ASM_FUNC reciprocaldivf32_asm
         //calculates quotient r0/r1 in r0 as a 20.12 number
