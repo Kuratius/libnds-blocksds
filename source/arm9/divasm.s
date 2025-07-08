@@ -17,19 +17,20 @@ BEGIN_ASM_FUNC reciprocaldivf32_asm
         umull   r12, r3, r1, r3
         clz     r12, r0
         lsl     r0, r0, r12  //normalize numerator so we have less work later
-        umull   r0, r1, r3,r0//multiply input with reciprocal
-        rsb     r0, r2, r12
-        adds    r0,r0, #17        //18 w/o rounding. 
+        umull   r1, r0, r3,r0//multiply input with reciprocal
+        rsb     r1, r2, r12
+        adds    r1,r1, #17        //18 w/o rounding. 
+#if 0
+        bx lr   //if you wish to return a float with mantissa in r0, and exponent in r1, use this.
+#endif
         bmi   1f //should not be taken normally
-        lsr   r0, r1, r0
+        lsr   r0, r0, r1
         adds  r0,r0, #1
         rrx   r0,r0  //if overflow, shift carry back in
         bx    lr
-1:      neg   r0, r0
-        lsls  r0, r1, r0 //if we shift into carry, set carry
-        addccs r0, r0,#1 //if carry is clear, check for overflow
-        addcs  r0,r0, #1 
-        rrx     r0, r0 //shift carry back in   
+1:      neg   r1, r1
+        lsls  r0, r0, r1 //if we shift into carry, set carry
+        rrx   r0, r0 //shift carry back in   
         bx lr
 
 #endif

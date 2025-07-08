@@ -35,6 +35,16 @@ asm (
         "adds   r12,%[R1],%[R1],lsr #7 \n \t" 
         "movcc  %[R1],r12 \n\t"
         "addcc  %[R3], %[R3],%[R3],lsr #7 \n\t"//<-this cant overflow, I think
+        "adds   r12,%[R1],%[R1],lsr #8 \n \t" 
+        "movcc  %[R1],r12 \n\t"
+        "addcc  %[R3], %[R3],%[R3],lsr #8 \n\t"//<-this cant overflow, I think
+        "adds   r12,%[R1],%[R1],lsr #9 \n \t" 
+        "movcc  %[R1],r12 \n\t"
+        "addcc  %[R3], %[R3],%[R3],lsr #9 \n\t"//<-this cant overflow, I think
+        "adds   r12,%[R1],%[R1],lsr #10 \n \t" 
+        "movcc  %[R1],r12 \n\t"
+        "addcc  %[R3], %[R3],%[R3],lsr #10 \n\t"//<-this cant overflow, I think
+
         :[R1]"+r"(b), [R3]"+r"(r2) 
         :
         :"r12", "cc"
@@ -42,6 +52,7 @@ asm (
     b>>=1;
     b=-b;//2's complement abuse, same as 2^32-r0
     uint32_t r=((uint64_t)b*r2)>>32;//hidden newton iteration
+    //r+=1;//may overflow?
     uint64_t result=(uint64_t)a* r;
     //output quotient as a 20.12 fixed point number
     return result>>(62-FRAC_BITS-shift); //if this shift is negative you have too many frac bits
