@@ -1,33 +1,38 @@
 #include <nds/asminc.h>
-
-
+.syntax unified
+#if 1
 BEGIN_ASM_FUNC reciprocaldivf32_asm
-        //unfinished/untested
         //calculates quotient r0/r1 in r0 as a 20.12 number
-//first, normalize divisor and find reciprocal
+        //normalize denominator and find reciprocal
         clz     r2, r1
         lsl     r1, r1, r2
-        mov     r3, #1<<30
-.irp x, 1,2,3,4,5,6,7,8 //might need more
-        adds   r12,r1,r1,lsr #\x  
+        mov     r3, #1u<<31
+.irp x, 1,2,3,4,5,6,7 //might need more
+        adds   r12,r1,r1,lsr #\x 
         movcc  r1,r12
-        addcc  r3, r3,r3,lsr #\x
+        addcc  r3, r3,r3,lsr #\x //<-this cant overflow, I think
 .endr
-        umull   r12, r1, r3,r1
-        add     r3, r3,r3
-        sub     r3, r3, r1, lsr #1
-        //reciprocal is in r3
-
-        umull   r0, r1, r3, r0 //multiply input with reciprocal
-
-        //below is a 64-bit shift, (r0, r1) is the 64-bit quotient, r2 contains the shift
-        add     r3, r2, #49
-        add     r2, r2, #17
-        rsb     r12, r3, #32
-        lsr     r0, r0, r3
-        orr     r0, r0, r1, lsl r12
-        orr     r0, r0, r1, lsr r2 //32-bit result in r0
+        lsr     r1, r1, #1
+        rsb     r1, r1, #0 //2's complement abuse
+        umull   r12, r3, r1, r3
+        clz     r12, r0
+        lsl     r0, r0, r12  //normalize numerator so we have less work later
+        umull   r0, r1, r3,r0//multiply input with reciprocal
+        rsb     r0, r2, r12
+        adds    r0,r0, #17        //18 w/o rounding. 
+        bmi   1f //should not be taken normally
+        lsr   r0, r1, r0
+        adds  r0,r0, #1
+        rrx   r0,r0  //if overflow, shift carry back in
+        bx    lr
+1:      neg   r0, r0
+        lsls  r0, r1, r0 //if we shift into carry, set carry
+        addccs r0, r0,#1 //if carry is clear, check for overflow
+        addcs  r0,r0, #1 
+        rrx     r0, r0 //shift carry back in   
         bx lr
+
+#endif
 
 #if 0
 //below function should be correct, but isnt as optimized because it's C-code with minor fixes
