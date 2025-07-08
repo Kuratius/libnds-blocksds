@@ -19,10 +19,11 @@ BEGIN_ASM_FUNC reciprocaldivf32_asm
         lsl     r0, r0, r12  //normalize numerator so we have less work later
         umull   r1, r0, r3,r0//multiply input with reciprocal
         rsb     r1, r2, r12
-        adds    r1,r1, #17        //18 w/o rounding. 
 #if 0
         bx lr   //if you wish to return a float with mantissa in r0, and exponent in r1, use this.
 #endif
+        adds    r1,r1, #17        //18 w/o rounding. 
+
         bmi   1f //should not be taken normally
         lsr   r0, r0, r1
         adds  r0,r0, #1

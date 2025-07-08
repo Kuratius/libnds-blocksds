@@ -14,37 +14,11 @@ ARM_CODE uint32_t reciprocaldivf32(uint32_t a, uint32_t b)
     //more than 15-16 iterations doesn't increase precision'
 asm (
         ".syntax unified \n\t"
-        "adds   r12,%[R1],%[R1],lsr #1 \n \t" 
+        ".irp   x, 1,2,3,4,5,6,7,8 \n \t" 
+        "adds   r12,%[R1],%[R1],lsr #\\x \n \t" 
         "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #1 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #2 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #2 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #3 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #3 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #4 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #4 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #5 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #5 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #6 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #6 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #7 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #7 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #8 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #8 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #9 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #9 \n\t"//<-this cant overflow, I think
-        "adds   r12,%[R1],%[R1],lsr #10 \n \t" 
-        "movcc  %[R1],r12 \n\t"
-        "addcc  %[R3], %[R3],%[R3],lsr #10 \n\t"//<-this cant overflow, I think
-
+        "addcc  %[R3], %[R3],%[R3],lsr #\\x \n\t"//<-this cant overflow, I think
+        ".endr \n \t" 
         :[R1]"+r"(b), [R3]"+r"(r2) 
         :
         :"r12", "cc"
