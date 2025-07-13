@@ -33,10 +33,9 @@ BEGIN_ASM_FUNC reciprocaldivf32_asm
         //fallback branch for safety
 1:      neg     r1, r1
         rsb     r2, r1, #32
-        lsr     r12, r12, r2 //r12 has lower bits
-        add     r0, r0, r12 //cannot overflow
         lsls    r0, r0, r1  //may shift into carry
+        orr     r0, r0, r12,lsr r2//get extra bit
         addcs   r0, r0, #1 //if this overflows, result is invalid anyway
-        addccs  r0, r0, #1 //if carry is not set, check if this sets carry
+        addscc  r0, r0, #1 //if carry is not set, check if this sets carry
         rrx     r0, r0     //shift any previous overflow bit back in
         bx lr
