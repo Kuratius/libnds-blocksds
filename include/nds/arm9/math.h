@@ -426,7 +426,7 @@ static inline uint32_t sqrt64(uint64_t a)
         #pragma GCC unroll 32
         for (uint64_t d=1ull<<(((63-__builtin_clzll(a))>>1) <<1); d!=0; d>>=2 )
         {
-            if ((int64_t)a >=(int64_t)(c + d))
+            if (a >=(c + d))
             {
                 a -= c + d;
                 c = (c >> 1) + d;
