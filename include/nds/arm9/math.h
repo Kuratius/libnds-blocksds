@@ -417,6 +417,27 @@ static inline uint32_t sqrt64_result(void)
 ///     32 bit integer result.
 static inline uint32_t sqrt64(uint64_t a)
 {
+    if (__builtin_constant_p(a))
+    {
+        if (a==0)
+            return 0;
+
+        uint64_t c = 0;
+        #pragma GCC unroll 32
+        for (uint64_t d=1ull<<(((63-__builtin_clzll(a))>>1) <<1); d!=0; d>>=2 )
+        {
+            if (a >=(c + d))
+            {
+                a -= c + d;
+                c = (c >> 1) + d;
+            }
+            else
+            {
+                c >>= 1;
+            }
+        }
+        return c;
+    }
     sqrt64_asynch(a);
     return sqrt64_result();
 }
